@@ -63,7 +63,7 @@ if [[ $CLUSTER_TYPE == "aws" ]]; then
     "logs_collected": {
       "files": {
         "collect_list": [{
-          "file_path": "/root/mas-on-aws/mas-provisioning.log",
+          "file_path": "/root/ansible-devops/multicloud-bootstrap/mas-provisioning.log",
           "log_group_name": "/ibm/mas/masocp-${RANDOM_STR}",
           "log_stream_name": "mas-provisioning-logs"
         }]
