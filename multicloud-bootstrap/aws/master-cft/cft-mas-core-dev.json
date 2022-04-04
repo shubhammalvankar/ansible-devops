@@ -878,7 +878,7 @@
                                     "Ref": "EmailNotification"
                                 },
                                 "' ",
-                                "2>&1 | tee mas-provisioning.log; ",
+                                "2>&1 | tee ./multicloud-bootstrap/mas-provisioning.log; ",
                                 "shutdown -P \"+1\""
                             ]
                         ]
