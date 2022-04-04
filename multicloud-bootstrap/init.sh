@@ -33,7 +33,7 @@ export EXS_OCP_PWD=${26}
 export EMAIL_NOTIFICATION=${27}
 
 # Load helper functions
-. helper.sh
+. multicloud-bootstrap/helper.sh
 export -f log
 export -f get_mas_creds
 export -f retrieve_mas_ca_cert
