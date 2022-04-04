@@ -82,7 +82,7 @@ export SLS_LICENSE_ID="$hostid"
 ## IAM
 # Create IAM policy
 cd $GIT_REPO_HOME/multicloud-bootstrap/aws
-policyarn=$(aws iam create-policy --policy-name ${IAM_POLICY_NAME} --policy-document file://${GIT_REPO_HOME}/aws/iam/policy.json | jq '.Policy.Arn' | tr -d "\"")
+policyarn=$(aws iam create-policy --policy-name ${IAM_POLICY_NAME} --policy-document file://${GIT_REPO_HOME}/multicloud-bootstrap/aws/iam/policy.json | jq '.Policy.Arn' | tr -d "\"")
 # Create IAM user
 aws iam create-user --user-name ${IAM_USER_NAME}
 aws iam attach-user-policy --user-name ${IAM_USER_NAME} --policy-arn $policyarn
@@ -224,7 +224,7 @@ ansible-playbook dependencies/install-mongodb.yml
 log "==== MongoDB deployment completed ===="
 
 ## Copying the entitlement.lic to MAS_CONFIG_DIR
-cp $GIT_REPO_HOME/entitlement.lic $MAS_CONFIG_DIR
+cp $GIT_REPO_HOME/multicloud-bootstrap/entitlement.lic $MAS_CONFIG_DIR
 
 ## Deploy Amqstreams
 # log "==== Amq streams deployment started ===="
