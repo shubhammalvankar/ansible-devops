@@ -194,6 +194,9 @@ else
   log "==== Existing OCP cluster provided, skipping the cluster creation, Bastion host creation and S3 upload of deployment context ===="
 fi
 
+## Installing the collection from ansible-galaxy
+ansible-galaxy collection install ibm.mas_devops
+
 ## Configure OCP cluster
 log "==== OCP cluster configuration (Cert Manager and SBO) started ===="
 cd $GIT_REPO_HOME/ibm/mas_devops/playbooks
