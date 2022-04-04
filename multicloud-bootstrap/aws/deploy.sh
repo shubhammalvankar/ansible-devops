@@ -195,7 +195,9 @@ else
 fi
 
 ## Installing the collection from ansible-galaxy
+log "==== mas_devops collection installation started ===="
 ansible-galaxy collection install ibm.mas_devops
+log "==== mas_devops collection installation completed ===="
 
 ## Configure OCP cluster
 log "==== OCP cluster configuration (Cert Manager and SBO) started ===="
