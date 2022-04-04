@@ -245,6 +245,8 @@ echo " MAS_JDBC_CERT_LOCAL_FILE: $MAS_JDBC_CERT_LOCAL_FILE"
 export DEPLOY_CP4D=$(echo $DEPLOY_CP4D | cut -d '=' -f 2)
 export DEPLOY_MANAGE=$(echo $DEPLOY_MANAGE | cut -d '=' -f 2)
 
+cd multicloud
+
 # Perform prevalidation checks
 log "===== PRE-VALIDATION STARTED ====="
 ./pre-validate.sh
