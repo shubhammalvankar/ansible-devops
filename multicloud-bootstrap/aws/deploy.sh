@@ -44,7 +44,7 @@ fi
 
 ## Download files from S3 bucket
 # Download SLS certificate
-cd $GIT_REPO_HOME
+cd $GIT_REPO_HOME/multicloud-bootstrap
 if [[ ${SLS_PUB_CERT_URL,,} =~ ^https? ]]; then
   log "Downloading SLS certificate from HTTP URL"
   wget "$SLS_PUB_CERT_URL" -O sls.crt
@@ -56,7 +56,7 @@ if [[ -f sls.crt ]]; then
   chmod 600 sls.crt
 fi
 # Download BAS certificate
-cd $GIT_REPO_HOME
+cd $GIT_REPO_HOME/multicloud-bootstrap
 if [[ ${BAS_PUB_CERT_URL,,} =~ ^https? ]]; then
   log "Downloading BAS certificate from HTTP URL"
   wget "$BAS_PUB_CERT_URL" -O bas.crt
@@ -81,7 +81,7 @@ export SLS_LICENSE_ID="$hostid"
 
 ## IAM
 # Create IAM policy
-cd $GIT_REPO_HOME/aws
+cd $GIT_REPO_HOME/multicloud-bootstrap/aws
 policyarn=$(aws iam create-policy --policy-name ${IAM_POLICY_NAME} --policy-document file://${GIT_REPO_HOME}/aws/iam/policy.json | jq '.Policy.Arn' | tr -d "\"")
 # Create IAM user
 aws iam create-user --user-name ${IAM_USER_NAME}
@@ -96,7 +96,7 @@ sleep 60
 if [[ $OPENSHIFT_USER_PROVIDE == "false" ]]; then
   ## Provisiong OCP cluster
   # Create tfvars file
-  cd $GIT_REPO_HOME/aws/ocp-terraform
+  cd $GIT_REPO_HOME/multicloud-bootstrap/aws/ocp-terraform
   rm -rf terraform.tfvars
 
   if [[ $DEPLOY_REGION == "ap-northeast-1" ]]
@@ -164,7 +164,7 @@ EOT
   oc set data secret/pull-secret -n openshift-config --from-file=/tmp/.dockerconfigjson
 
   ## Create bastion host
-  cd $GIT_REPO_HOME/aws
+  cd $GIT_REPO_HOME/multicloud-bootstrap/aws
   set +e
   ./create-bastion-host.sh
   retcode=$?
@@ -175,7 +175,7 @@ EOT
   set -e
  
   # Backup Terraform configuration
-  cd $GIT_REPO_HOME
+  cd $GIT_REPO_HOME/multicloud-bootstrap
   rm -rf /tmp/mas-multicloud
   mkdir /tmp/mas-multicloud
   cp -r * /tmp/mas-multicloud
@@ -196,9 +196,9 @@ fi
 
 ## Configure OCP cluster
 log "==== OCP cluster configuration (Cert Manager and SBO) started ===="
-cd $GIT_REPO_HOME/ansible/playbooks
+cd $GIT_REPO_HOME/ibm/mas_devops/playbooks
 set +e
-ansible-playbook configure-ocp.yml 
+ansible-playbook ocp/configure-ocp.yml 
 if [[ $? -ne 0 ]]; then
   # One reason for this failure is catalog sources not having required state information, so recreate the catalog-operator pod
   # https://bugzilla.redhat.com/show_bug.cgi?id=1807128
@@ -208,7 +208,7 @@ if [[ $? -ne 0 ]]; then
   oc delete pod $podname -n openshift-operator-lifecycle-manager
   sleep 10
   # Retry the step
-  ansible-playbook configure-ocp.yml
+  ansible-playbook ocp/configure-ocp.yml
   retcode=$?
   if [[ $retcode -ne 0 ]]; then
     log "Failed while configuring OCP cluster"
@@ -220,7 +220,7 @@ log "==== OCP cluster configuration (Cert Manager and SBO) completed ===="
 
 ## Deploy MongoDB
 log "==== MongoDB deployment started ===="
-ansible-playbook install-mongodb.yml 
+ansible-playbook dependencies/install-mongodb.yml 
 log "==== MongoDB deployment completed ===="
 
 ## Copying the entitlement.lic to MAS_CONFIG_DIR
@@ -236,12 +236,12 @@ if [[ (-z $SLS_ENDPOINT_URL) || (-z $SLS_REGISTRATION_KEY) || (-z $SLS_PUB_CERT_
 then
     ## Deploy SLS
     log "==== SLS deployment started ===="
-    ansible-playbook install-sls.yml
+    ansible-playbook dependencies/install-sls.yml
     log "==== SLS deployment completed ===="
 
 else
     log "=== Using Existing SLS Deployment ==="
-    ansible-playbook cfg-sls.yml
+    ansible-playbook dependencies/cfg-sls.yml
     log "=== Generated SLS Config YAML ==="
 fi
 
@@ -250,20 +250,20 @@ if [[ (-z $BAS_API_KEY) || (-z $BAS_ENDPOINT_URL) || (-z $BAS_PUB_CERT_URL) ]]
 then
     ## Deploy BAS
     log "==== BAS deployment started ===="
-    ansible-playbook install-bas.yml
+    ansible-playbook dependencies/install-uds.yml
     log "==== BAS deployment completed ===="
 
 else
     log "=== Using Existing BAS Deployment ==="
-    ansible-playbook cfg-bas.yml
+    ansible-playbook dependencies/cfg-bas.yml
     log "=== Generated BAS Config YAML ==="
 fi
 
 # Deploy CP4D
 if [[ $DEPLOY_CP4D == "true" ]]; then
   log "==== CP4D deployment started ===="
-  ansible-playbook install-services-db2.yml
-  ansible-playbook create-db2-instance.yml
+  ansible-playbook cp4d/install-services-db2.yml
+  ansible-playbook cp4d/create-db2-instance.yml
   log "==== CP4D deployment completed ===="
 fi
 if [[ $DEPLOY_MANAGE == "true" ]]; then
@@ -275,14 +275,14 @@ if [[ $DEPLOY_MANAGE == "true" ]]; then
   else
     # Configure JDBC
     log "==== Configure JDBC  started ===="
-    ansible-playbook configure-suite-db.yml -vv
+    ansible-playbook mas/configure-suite-db.yml -vv
     log "==== Configure JDBC completed ===="
   fi
 fi
 
 ## Deploy MAS
 log "==== MAS deployment started ===="
-ansible-playbook install-suite.yml
+ansible-playbook mas/install-suite.yml
 log "==== MAS deployment completed ===="
 
 ## Deploy Manage
@@ -290,14 +290,14 @@ if [[ $DEPLOY_MANAGE == "true" ]]; then
   # Deploy Manage
   log "==== MAS Manage deployment started ===="
 
-  ansible-playbook install-app.yml
+  ansible-playbook mas/install-app.yml
   log "==== MAS Manage deployment completed ===="
   if [[ (-z $MAS_JDBC_USER) || (-z $MAS_JDBC_PASSWORD) || (-z $MAS_JDBC_URL) || (-z $MAS_JDBC_CERT_URL) ]]; then
     log "Skipping the Manage app configuration"
   else
       # Configure app to use the DB
     log "==== MAS Manage configure app started ===="
-    ansible-playbook configure-app.yml -vv
+    ansible-playbook mas/configure-app.yml -vv
     log "==== MAS Manage configure app completed ===="
   fi
 fi

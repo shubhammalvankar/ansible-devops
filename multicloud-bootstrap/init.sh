@@ -148,7 +148,7 @@ export DB2WH_VERSION=11.5.7.0-cn1
 # Manage variables
 export MAS_APP_ID=manage
 export MAS_WORKSPACE_ID="wsmasocp"
-export MAS_JDBC_CERT_LOCAL_FILE=$GIT_REPO_HOME/db.crt
+export MAS_JDBC_CERT_LOCAL_FILE=$GIT_REPO_HOME/multicloud-bootstrap/db.crt
 
 RESP_CODE=0
 
@@ -318,7 +318,7 @@ fi
 
 ## Complete the template deployment
 if [[ $CLUSTER_TYPE == "aws" ]]; then
-  cd $GIT_REPO_HOME/$CLUSTER_TYPE
+  cd $GIT_REPO_HOME/multicloud-bootstrap/$CLUSTER_TYPE
   # Complete the CFT stack creation successfully
   log "Sending completion signal to CloudFormation stack."
   log " STATUS=$STATUS"
@@ -333,12 +333,12 @@ if [[ $CLUSTER_TYPE == "aws" ]]; then
   fi
 
   # Delete sensitive details from the log file
-  cd $GIT_REPO_HOME
+  cd $GIT_REPO_HOME/multicloud-bootstrap
   sed -i '/openshift_password/d' mas-provisioning.log
   sed -i '/aws_secret_access_key/d' mas-provisioning.log
   log "Deleted sensitive details from log file"
   
   # Upload the log file to s3
-  aws s3 cp $GIT_REPO_HOME/mas-provisioning.log $DEPLOYMENT_CONTEXT_UPLOAD_PATH
+  aws s3 cp $GIT_REPO_HOME/multicloud-bootstrap/mas-provisioning.log $DEPLOYMENT_CONTEXT_UPLOAD_PATH
 fi
 exit $RESP_CODE

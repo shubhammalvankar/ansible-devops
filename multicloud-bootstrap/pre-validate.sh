@@ -61,7 +61,7 @@ if [[ $DEPLOY_MANAGE == "true" ]]; then
             SCRIPT_STATUS=14
         else         
             log "Downloading DB certificate"
-            cd $GIT_REPO_HOME
+            cd $GIT_REPO_HOME/multicloud-bootstrap
             if [[ ${MAS_JDBC_CERT_URL,,} =~ ^https? ]]; then
                 wget "$MAS_JDBC_CERT_URL" -O db.crt
                 log " MAS_JDBC_CERT_LOCAL_FILE=$MAS_JDBC_CERT_LOCAL_FILE"
@@ -69,7 +69,7 @@ if [[ $DEPLOY_MANAGE == "true" ]]; then
                 aws s3 cp "$MAS_JDBC_CERT_URL" db.crt
                 log " MAS_JDBC_CERT_LOCAL_FILE=$MAS_JDBC_CERT_LOCAL_FILE"
             fi
-            export MAS_DB2_JAR_LOCAL_PATH=$GIT_REPO_HOME/lib/db2jcc4.jar
+            export MAS_DB2_JAR_LOCAL_PATH=$GIT_REPO_HOME/multicloud-bootstrap/lib/db2jcc4.jar
             if [[ ${MAS_JDBC_URL,, } =~ ^jdbc:db2? ]]; then
                 log  "Connecting to the Database"
                 if python jdbc-prevalidate.py;  then 
@@ -162,7 +162,7 @@ if [[ -z $MAS_LICENSE_URL ]]; then
 else
     # Download MAS license
     log "==== Downloading MAS license ===="
-    cd $GIT_REPO_HOME
+    cd $GIT_REPO_HOME/multicloud-bootstrap
     if [[ ${MAS_LICENSE_URL,,} =~ ^https? ]]; then
         mas_license=$(wget --server-response "$MAS_LICENSE_URL" -O entitlement.lic 2>&1 | awk '/^  HTTP/{print $2}')
         if [ $mas_license -ne 200 ]; then

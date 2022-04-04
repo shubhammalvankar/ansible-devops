@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script will send email notification using AWS SES service
-cd $GIT_REPO_HOME
+cd $GIT_REPO_HOME/multicloud-bootstrap
 MSG_FILE_SRC_DETAILS="aws/notification/email/message-details.json"
 MSG_FILE_SRC_CREDS="aws/notification/email/message-creds.json"
 MSG_FILE="aws/notification/email/message-updated.json"
