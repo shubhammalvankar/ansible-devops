@@ -100,8 +100,8 @@ fi
 # OCP variables
 export GIT_REPO_HOME=$(pwd)
 export CLUSTER_NAME="masocp-${RANDOM_STR}"
-export OPENSHIFT_USER="masocpuser"
-export OPENSHIFT_PASSWORD=masocp${RANDOM_STR}pass
+export OCP_USERNAME="masocpuser"
+export OCP_PASSWORD=masocp${RANDOM_STR}pass
 export OPENSHIFT_PULL_SECRET_FILE_PATH=${GIT_REPO_HOME}/multicloud-bootstrap/pull-secret.json
 export MASTER_NODE_COUNT="3"
 export WORKER_NODE_COUNT="3"
@@ -213,8 +213,8 @@ echo " EMAIL_NOTIFICATION: $EMAIL_NOTIFICATION"
 echo " HOME: $HOME"
 echo " GIT_REPO_HOME: $GIT_REPO_HOME"
 echo " CLUSTER_NAME: $CLUSTER_NAME"
-echo " OPENSHIFT_USER: $OPENSHIFT_USER"
-echo " OPENSHIFT_PASSWORD: $OPENSHIFT_PASSWORD"
+echo " OCP_USERNAME: $OCP_USERNAME"
+echo " OCP_PASSWORD: $OCP_PASSWORD"
 echo " OPENSHIFT_PULL_SECRET_FILE_PATH: $OPENSHIFT_PULL_SECRET_FILE_PATH"
 echo " MASTER_NODE_COUNT: $MASTER_NODE_COUNT"
 echo " WORKER_NODE_COUNT: $WORKER_NODE_COUNT"
@@ -275,15 +275,15 @@ if [[ $PRE_VALIDATION == "pass" ]]; then
     split_ocp_api_url $EXS_OCP_URL
     log "Debug: after: CLUSTER_NAME: $CLUSTER_NAME  BASE_DOMAIN: $BASE_DOMAIN"
     # echo $BASE_DOMAIN
-    export OPENSHIFT_USER=$EXS_OCP_USER
-    export OPENSHIFT_PASSWORD=$EXS_OCP_PWD
+    export OCP_USERNAME=$EXS_OCP_USER
+    export OCP_PASSWORD=$EXS_OCP_PWD
     export OPENSHIFT_USER_PROVIDE="true"
   else
     ## No input from user. Generate Cluster Name, Username, and Password. 
     echo "Debug: No cluster details or insufficient data provided. Proceed to create new OCP cluster later"
     export CLUSTER_NAME="masocp-${RANDOM_STR}"
-    export OPENSHIFT_USER="masocpuser"
-    export OPENSHIFT_PASSWORD=masocp${RANDOM_STR}pass
+    export OCP_USERNAME="masocpuser"
+    export OCP_PASSWORD=masocp${RANDOM_STR}pass
     export OPENSHIFT_USER_PROVIDE="false"
   fi
   log " OPENSHIFT_USER_PROVIDE=$OPENSHIFT_USER_PROVIDE"

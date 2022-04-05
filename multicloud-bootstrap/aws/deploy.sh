@@ -127,8 +127,8 @@ secret_access_key               = "$AWS_SECRET_ACCESS_KEY"
 base_domain                     = "$BASE_DOMAIN"
 openshift_pull_secret_file_path = "$OPENSHIFT_PULL_SECRET_FILE_PATH"
 public_ssh_key                  = "$SSH_PUB_KEY"
-openshift_username              = "$OPENSHIFT_USER"
-openshift_password              = "$OPENSHIFT_PASSWORD"
+openshift_username              = "$OCP_USERNAME"
+openshift_password              = "$OCP_PASSWORD"
 cpd_api_key                     = "$CPD_API_KEY"
 master_instance_type            = "$MASTER_INSTANCE_TYPE"
 worker_instance_type            = "$WORKER_INSTANCE_TYPE"
@@ -154,7 +154,7 @@ EOT
 ## Add ER Key to global pull secret
   cd /tmp
   # Login to OCP cluster
-  oc login -u $OPENSHIFT_USER -p $OPENSHIFT_PASSWORD --server=https://api.${CLUSTER_NAME}.${BASE_DOMAIN}:6443
+  oc login -u $OCP_USERNAME -p $OCP_PASSWORD --server=https://api.${CLUSTER_NAME}.${BASE_DOMAIN}:6443
   oc extract secret/pull-secret -n openshift-config --keys=.dockerconfigjson --to=. --confirm
   export encodedEntitlementKey=$(echo cp:$SLS_ENTITLEMENT_KEY | tr -d '\n' | base64 -w0)
   ##export encodedEntitlementKey=$(echo cp:$SLS_ENTITLEMENT_KEY | base64 -w0)
