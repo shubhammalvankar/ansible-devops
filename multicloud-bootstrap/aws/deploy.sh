@@ -223,10 +223,6 @@ fi
 set -e
 log "==== OCP cluster configuration (Cert Manager and SBO) completed ===="
 
-## Creating directory MAS_CONFIG_DIR
-mkdir -p $MAS_CONFIG_DIR  
-chmod 700 $MAS_CONFIG_DIR
-
 ## Deploy MongoDB
 log "==== MongoDB deployment started ===="
 ansible-playbook dependencies/install-mongodb-ce.yml

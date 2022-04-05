@@ -292,6 +292,10 @@ if [[ $PRE_VALIDATION == "pass" ]]; then
   echo "$OCP_PULL_SECRET" > $OPENSHIFT_PULL_SECRET_FILE_PATH
   chmod 600 $OPENSHIFT_PULL_SECRET_FILE_PATH
 
+  # Create MAS_CONFIG_DIR directory
+  mkdir -p $MAS_CONFIG_DIR  
+  chmod 700 $MAS_CONFIG_DIR
+
   # Call cloud specific script
   chmod +x $CLUSTER_TYPE/*.sh
   log "===== PROVISIONING STARTED ====="
