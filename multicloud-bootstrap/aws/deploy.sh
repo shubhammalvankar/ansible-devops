@@ -225,7 +225,7 @@ log "==== OCP cluster configuration (Cert Manager and SBO) completed ===="
 
 ## Deploy MongoDB
 log "==== MongoDB deployment started ===="
-ansible-playbook dependencies/install-mongodb.yml 
+ansible-playbook dependencies/install-mongodb-ce.yml
 log "==== MongoDB deployment completed ===="
 
 ## Copying the entitlement.lic to MAS_CONFIG_DIR
@@ -280,7 +280,7 @@ if [[ $DEPLOY_MANAGE == "true" ]]; then
   else
     # Configure JDBC
     log "==== Configure JDBC  started ===="
-    ansible-playbook mas/configure-suite-db.yml -vv
+    ansible-playbook mas/configure-suite-db.yml
     log "==== Configure JDBC completed ===="
   fi
 fi
@@ -302,7 +302,7 @@ if [[ $DEPLOY_MANAGE == "true" ]]; then
   else
       # Configure app to use the DB
     log "==== MAS Manage configure app started ===="
-    ansible-playbook mas/configure-app.yml -vv
+    ansible-playbook mas/configure-app.yml
     log "==== MAS Manage configure app completed ===="
   fi
 fi
