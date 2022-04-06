@@ -16,8 +16,6 @@ IAM_POLICY_NAME="masocp-policy-${RANDOM_STR}"
 IAM_USER_NAME="masocp-user-${RANDOM_STR}"
 # SLS variables 
 export SLS_STORAGE_CLASS=gp2
-# BAS variables 
-export BAS_META_STORAGE=gp2
 # CP4D variables
 export CPD_BLOCK_STORAGE_CLASS=gp2
 
@@ -55,17 +53,17 @@ fi
 if [[ -f sls.crt ]]; then
   chmod 600 sls.crt
 fi
-# Download BAS certificate
+# Download UDS certificate
 cd $GIT_REPO_HOME/multicloud-bootstrap
 if [[ ${BAS_PUB_CERT_URL,,} =~ ^https? ]]; then
-  log "Downloading BAS certificate from HTTP URL"
-  wget "$BAS_PUB_CERT_URL" -O bas.crt
+  log "Downloading UDS certificate from HTTP URL"
+  wget "$BAS_PUB_CERT_URL" -O uds.crt
 elif [[ ${BAS_PUB_CERT_URL,,} =~ ^s3 ]]; then
-  log "Downloading BAS certificate from S3 URL"
-  aws s3 cp "$BAS_PUB_CERT_URL" bas.crt
+  log "Downloading UDS certificate from S3 URL"
+  aws s3 cp "$BAS_PUB_CERT_URL" uds.crt
 fi
-if [[ -f bas.crt ]]; then
-  chmod 600 bas.crt
+if [[ -f uds.crt ]]; then
+  chmod 600 uds.crt
 fi
 
 ### Read License File & Retrive SLS hostname and host id
@@ -250,18 +248,18 @@ else
     log "=== Generated SLS Config YAML ==="
 fi
 
-#BAS Deployment
+#UDS Deployment
 if [[ (-z $BAS_API_KEY) || (-z $BAS_ENDPOINT_URL) || (-z $BAS_PUB_CERT_URL) ]]
 then
-    ## Deploy BAS
-    log "==== BAS deployment started ===="
+    ## Deploy UDS
+    log "==== UDS deployment started ===="
     ansible-playbook dependencies/install-uds.yml
-    log "==== BAS deployment completed ===="
+    log "==== UDS deployment completed ===="
 
 else
-    log "=== Using Existing BAS Deployment ==="
+    log "=== Using Existing UDS Deployment ==="
     ansible-playbook dependencies/cfg-bas.yml
-    log "=== Generated BAS Config YAML ==="
+    log "=== Generated UDS Config YAML ==="
 fi
 
 # Deploy CP4D
