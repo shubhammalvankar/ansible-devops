@@ -120,6 +120,7 @@ export KAFKA_CLUSTER_SIZE=small
 export KAFKA_USER_NAME=masuser
 # SLS variables 
 export SLS_NAMESPACE="ibm-sls-${RANDOM_STR}"
+export SLS_MONGODB_CFG_FILE="${MAS_CONFIG_DIR}/mongo-${MONGODB_NAMESPACE}.yml"
 # BAS variables 
 export BAS_NAMESPACE="ibm-bas-${RANDOM_STR}"
 export BAS_PERSISTENT_STORAGE=ocs-storagecluster-cephfs
